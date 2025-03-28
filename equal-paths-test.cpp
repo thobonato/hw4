@@ -21,14 +21,16 @@ void setNode(Node* n, int key, Node* left=NULL, Node* right=NULL)
 void test1(const char* msg)
 {
   setNode(a,1,NULL, NULL);
-  cout << msg << ": " <<   equalPaths(a) << endl;
+  cout << msg << ": " <<  std::boolalpha << equalPaths(a) << endl;
+  cout << "\t exp: true" << endl;
 }
 
 void test2(const char* msg)
 {
   setNode(a,1,b,NULL);
   setNode(b,2,NULL,NULL);
-  cout << msg << ": " <<   equalPaths(a) << endl;
+  cout << msg << ": " <<  std::boolalpha << equalPaths(a) << endl;
+  cout << "\t exp: true" << endl;
 }
 
 void test3(const char* msg)
@@ -36,14 +38,16 @@ void test3(const char* msg)
   setNode(a,1,b,c);
   setNode(b,2,NULL,NULL);
   setNode(c,3,NULL,NULL);
-  cout << msg << ": " <<   equalPaths(a) << endl;
+  cout << msg << ": " <<  std::boolalpha << equalPaths(a) << endl;
+  cout << "\t exp: true" << endl;
 }
 
 void test4(const char* msg)
 {
   setNode(a,1,NULL,c);
   setNode(c,3,NULL,NULL);
-  cout << msg << ": " <<   equalPaths(a) << endl;
+  cout << msg << ": " <<  std::boolalpha << equalPaths(a) << endl;
+  cout << "\t exp: true" << endl;
 }
 
 void test5(const char* msg)
@@ -52,7 +56,8 @@ void test5(const char* msg)
   setNode(b,2,NULL,d);
   setNode(c,3,NULL,NULL);
   setNode(d,4,NULL,NULL);
-  cout << msg << ": " <<   equalPaths(a) << endl;
+  cout << msg << ": " << std::boolalpha << equalPaths(a) << endl;
+  cout << "\t exp: false" << endl;
 }
 
 int main()
