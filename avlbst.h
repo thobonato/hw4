@@ -149,6 +149,41 @@ template<class Key, class Value>
 void AVLTree<Key, Value>::insert (const std::pair<const Key, Value> &new_item)
 {
     // TODO
+    Key key = new_item.first;
+    Value val = new_item.second;
+
+    // tree is empty, just add
+    if(root_ == NULL){
+        root_ = new Node<Key, Value>(key, val, NULL);
+    }
+    
+    // loop until tree is at an end or you found the key
+    Node<Key, Value>* tmp = root_;
+    while(tmp != NULL){
+        // found the exact key, overwrite and return
+        if(tmp->getKey() == key){
+            tmp->setValue(val);
+            return;
+        }
+        // still looking, decide to look left or right
+        if(key > tmp->getKey()){
+            // if right is null, add it there
+            if(tmp->getRight() == NULL){
+                tmp->setRight(new Node<Key, Value>(key, val, tmp));
+                return;
+            }
+            // else, make tmp right
+            tmp = tmp->getRight();
+        } else {
+            // if left is null, add it there
+            if(tmp->getLeft() == NULL){
+                tmp->setLeft(new Node<Key, Value>(key, val, tmp));
+                return;
+            }
+            // else, make tmp left
+            tmp = tmp->getLeft();
+        }
+    }
 }
 
 /*
@@ -159,6 +194,59 @@ template<class Key, class Value>
 void AVLTree<Key, Value>:: remove(const Key& key)
 {
     // TODO
+    Node<Key, Value>* curr = root_;
+
+    while(curr != NULL){
+        // found the exact key
+        if(curr->getKey() == key){
+            
+            // check if node has two children
+            if(curr->getLeft() != NULL && curr->getRight() != NULL){
+                Node<Key, Value>* pred = predecessor(curr);
+                nodeSwap(curr, pred);
+            }
+
+            // now curr has at most one child
+
+            // find replacement 
+            Node<Key, Value>* repl = NULL;
+            if(curr->getLeft() != NULL){
+                repl = curr->getLeft();
+            } else {
+                repl = curr->getRight();
+            }
+
+            if(curr->getParent() == NULL){
+                // removing root
+                root_ = repl;
+                if (repl != NULL) repl->setParent(NULL);
+            } else {
+                // not root
+                Node<Key, Value>* parent = curr->getParent();
+                if(parent->getLeft() == curr){
+                    parent->setLeft(repl);
+                } else {
+                    parent->setRight(repl);
+                }
+
+                if(repl != NULL){
+                    repl->setParent(parent);
+                }
+            }
+
+            delete curr;
+            return;
+        }
+
+        // still looking for key, decide to look left or right
+        if(key > curr->getKey()){
+            // go right
+            curr = curr->getRight();
+        } else {
+            // go left
+            curr = curr->getLeft();
+        }
+    }
 }
 
 template<class Key, class Value>

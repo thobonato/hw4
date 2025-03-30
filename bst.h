@@ -5,6 +5,8 @@
 #include <exception>
 #include <cstdlib>
 #include <utility>
+#include <stack>
+#include <queue>
 
 /**
  * A templated class for a Node in a search tree.
@@ -525,79 +527,43 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         // found the exact key
         if(curr->getKey() == key){
             
-            // find if its to left or right of parent
-            bool isLeftOfParent = false;
-            isLeftOfParent = (curr->getParent()->getLeft() == curr);
-
-            // if leaf, then 
-            if(curr->getRight() == NULL && curr->getLeft() == NULL){
-                
-                // set parent pointer to NULL
-                if(isLeftOfParent){
-                    curr->getParent()->setLeft(NULL);
-                } else {
-                    curr->getParent()->setRight(NULL);
-                }
-
-                // delete curr, exit
-                delete curr;
-                return;
+            // check if node has two children
+            if(curr->getLeft() != NULL && curr->getRight() != NULL){
+                Node<Key, Value>* pred = predecessor(curr);
+                nodeSwap(curr, pred);
             }
 
-            // has one child
-            if(curr->getLeft() == NULL || curr->getRight() == NULL){
-                // promote child by setting parent pointer to the only child
-                if(isLeftOfParent){
-                    if(curr->getLeft() == NULL){
-                        curr->getParent()->setLeft(curr->getRight());
-                    } else {
-                        curr->getParent()->setLeft(curr->getLeft());
-                    }
-                } else {
-                    if(curr->getLeft() == NULL){
-                        curr->getParent()->setRight(curr->getRight());
-                    } else {
-                        curr->getParent()->setRight(curr->getLeft());
-                    }
-                }
+            // now curr has at most one child
 
-                // delete curr, exit
-                delete curr;
-                return;
-            }
-
-            // has 2 children, find predecessor
-            Node<Key, Value>* pred = predecessor(curr);
-
-            // swap the nodes
-            nodeSwap(curr, pred);
-
-            // find if its to left or right of parent
-            isLeftOfParent = (curr->getParent()->getLeft() == curr);
-
-            // could be leaf node or single child (left)
-            // if left child
+            // find replacement 
+            Node<Key, Value>* repl = NULL;
             if(curr->getLeft() != NULL){
-                // promote child by setting parent pointer to the only child
-                if(isLeftOfParent){
-                    curr->getParent()->setLeft(curr->getLeft());
+                repl = curr->getLeft();
+            } else {
+                repl = curr->getRight();
+            }
+
+            if(curr->getParent() == NULL){
+                // removing root
+                root_ = repl;
+                if (repl != NULL) repl->setParent(NULL);
+            } else {
+                // not root
+                Node<Key, Value>* parent = curr->getParent();
+                if(parent->getLeft() == curr){
+                    parent->setLeft(repl);
                 } else {
-                    curr->getParent()->setRight(curr->getLeft());
+                    parent->setRight(repl);
                 }
-            } else { // leaf
-                
-                // set parent pointer to NULL
-                if(isLeftOfParent){
-                    curr->getParent()->setLeft(NULL);
-                } else {
-                    curr->getParent()->setRight(NULL);
+
+                if(repl != NULL){
+                    repl->setParent(parent);
                 }
             }
-            // delete curr, exit
+
             delete curr;
             return;
         }
-
 
         // still looking for key, decide to look left or right
         if(key > curr->getKey()){
