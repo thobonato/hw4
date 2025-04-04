@@ -359,6 +359,7 @@ BinarySearchTree<Key, Value>::iterator::operator++()
             current_ = NULL;
             return *this;
         }
+        current_ = current_->getParent();
         return *this;
 
     }
