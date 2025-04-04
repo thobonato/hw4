@@ -403,66 +403,64 @@ void AVLTree<Key, Value>::remove(const Key& key)
                 return;
             }
             
-            // Rebalance the tree starting from parent of the deleted node
+            // rebalance tree starting from parent of deleted node
             AVLNode<Key, Value>* n = parent;
-            bool heightDecreased = true; // Flag indicating subtree height decreased
+            bool heightDecreased = true;
             
             while (n != NULL && heightDecreased) {
                 int8_t oldBalance = n->getBalance();
                 
-                // Update balance factor based on which child was removed
+                // update balance factor
                 if (wasLeftChild) {
-                    n->updateBalance(1); // Lost a left child, balance increases
+                    n->updateBalance(1); // lost left child, balance increases
                 } else {
-                    n->updateBalance(-1); // Lost a right child, balance decreases
+                    n->updateBalance(-1); // lost right child, balance decreases
                 }
                 
                 int8_t newBalance = n->getBalance();
                 
-                // Check if we need to perform a rotation
+                // cehck rotations
                 if (newBalance < -1 || newBalance > 1) {
-                    // Save old parent to determine child direction for next iteration
+                    // save parent to determine child direction
                     AVLNode<Key, Value>* oldParent = n->getParent();
                     bool wasLeftChildTemp = (oldParent != NULL && oldParent->getLeft() == n);
                     
-                    // Perform rotations
+                    // rotate
                     if (newBalance > 1) {
-                        // Right-heavy
+                        // right-heavy
                         AVLNode<Key, Value>* rightChild = n->getRight();
                         if (rightChild->getBalance() >= 0) {
-                            // Right-Right case
+                            // right-right case
                             rotateLeft(n);
                         } else {
-                            // Right-Left case
+                            // right-left case
                             rotateRight(rightChild);
                             rotateLeft(n);
                         }
                     } else {
-                        // Left-heavy
+                        // left-heavy
                         AVLNode<Key, Value>* leftChild = n->getLeft();
                         if (leftChild->getBalance() <= 0) {
-                            // Left-Left case
+                            // left-left case
                             rotateRight(n);
                         } else {
-                            // Left-Right case
+                            // left-right case
                             rotateLeft(leftChild);
                             rotateRight(n);
                         }
                     }
                     
-                    // After rotations, the height might be unchanged
+                    // check if height changed
                     heightDecreased = (n->getBalance() == 0);
                     
-                    // Update for next iteration
+                    // update for next iter
                     wasLeftChild = wasLeftChildTemp;
                     n = oldParent;
                 } else {
-                    // No rotation needed
-                    // If balance went from ±1 to 0, height decreased
-                    // If balance went from 0 to ±1, height unchanged
+                    // no rotation needed
                     heightDecreased = (oldBalance != 0 && newBalance == 0);
                     
-                    // Update for next iteration
+                    // update for next iter
                     wasLeftChild = (n->getParent() != NULL && n->getParent()->getLeft() == n);
                     n = n->getParent();
                 }
